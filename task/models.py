@@ -7,13 +7,14 @@ class Task(models.Model):
         ("TO_DO", "To do"),
         ("IN_PROGRESS", "In progress")
     ]
+    
     PRIORITY_CHOISES = [
         ("LOW", "Low"),
         ("MEDIUM", "Medium"),
         ("HIGH", "HIGH")
     ]
 
-    titile = models.CharField(max_length=63)
+    title = models.CharField(max_length=63)
     description = models.TextField(blank=True)
     due_to_date = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=31, choices=STATUS_CHOICES, default="TO_DO")
