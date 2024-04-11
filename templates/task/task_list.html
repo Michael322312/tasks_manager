@@ -1,19 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <ol class="list-group list-group-numbered">
+    <form method="get" class="m-3 w-25 d-inline-flex p-1" style="min-width: 300px;">
+        {{form.status}}
+        <button type="submit" class="btn btn-outline-primary m-1">Complete</button>
+    </form>
+    <ol class="list-group list-group-light list-group-numbered m-2">
         {% for task in tasks%}
-            <a href="{% url 'task_detail' task.pk %}">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">{{task.title}}</div>
-                        {{task.status}}
+            <a href="{% url 'task_detail' task.pk %}" style="text-decoration: none;" class="p-1 w-25 h-50">
+                <li class="list-group-item" style="min-width: 300px;">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{task.title}}</div>
+                            {{task.get_status_display}}
+                        </div>
+                        {% if task.priority == "3"%}
+                            <span class="badge text-bg-primary rounded-pill" >{{task.get_priority_display}}</span>
+                        {% elif task.priority == "2"%}
+                            <span class="badge text-bg-warning rounded-pill" >{{task.get_priority_display}}</span>
+                        {% elif task.priority == "1"%}
+                            <span class="badge text-bg-danger rounded-pill" >{{task.get_priority_display}}</span>
+                        {%endif%}
                     </div>
-                    <span class="badge text-bg-primary rounded-pill">{{task.priority}}</span>
+                    <br>
+                    <form action="{% url 'task_complete' task.pk%}" method="post">
+                        {%csrf_token%}
+                        <button type="submit" class="bg-success rounded btn text-white flex-start">Complete</button>
+                    </form>
                 </li>
             </a>
         {% empty %}
             <h2>There is not available any tasks</h2>
         {% endfor %}
-    </ol>
+
 {% endblock %}

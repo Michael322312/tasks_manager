@@ -9,9 +9,9 @@ class Task(models.Model):
     ]
     
     PRIORITY_CHOISES = [
-        ("LOW", "Low"),
-        ("MEDIUM", "Medium"),
-        ("HIGH", "HIGH")
+        ("1", "High"),
+        ("2", "Medium"),
+        ("3", "Low")
     ]
 
     title = models.CharField(max_length=63)
@@ -20,3 +20,6 @@ class Task(models.Model):
     status = models.CharField(max_length=31, choices=STATUS_CHOICES, default="TO_DO")
     priority = models.CharField(max_length=31, choices=PRIORITY_CHOISES, default="LOW")
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
+
+    class Meta:
+        ordering = ['priority']
