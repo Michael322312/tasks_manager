@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from .mixins import *
+from django.core.exceptions import ValidationError
 # Create your views here.
 
 
@@ -18,7 +19,7 @@ class TaskListView(ListView):
     template_name="task/task_list.html"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(task_for=self.request.user)
         status = self.request.GET.get('status', '')
         if status:
             queryset = queryset.filter(status=status)
@@ -34,6 +35,23 @@ class TaskDetailView(DetailView):
     model = Task
     context_object_name = "task"
     template_name="task/task_detail.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = CommentForm
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.creator = request.user
+            comment.task = self.get_object()
+            comment.save()
+            return redirect("task_detail", pk=comment.task.pk)
+        else:
+            raise ValidationError(message="Bad input")
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
@@ -71,3 +89,26 @@ class TaskComplete(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
         task.status = 'DONE'
         task.save()
         return HttpResponseRedirect((reverse_lazy("task_list")))
+
+
+class CommentUpdateView(LoginRequiredMixin, UserIsOwnerMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "task/comment_form.html"
+
+    def form_valid(self, form):
+        comment = self.get_object()
+        if comment.creator == self.request.user:
+            return super().form_valid(form)
+        raise PermissionDenied("You did not wrote this comment")
+    
+    def get_success_url(self):
+        return reverse_lazy("task_detail", kwargs={'pk': self.object.task.id})
+    
+
+class CommentDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
+    model = Comment
+    template_name = "task/delete_comment.html"
+
+    def get_success_url(self):
+        return reverse_lazy("task_detail", kwargs={'pk': self.object.task.id})

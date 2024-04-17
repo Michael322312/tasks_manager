@@ -1,46 +1,72 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="card m-4">
-        <h5 class="card-header">Task</h5>
-        <div class="card-body">
-        <h5 class="card-title">{{task.title}}</h5>
-        <p class="card-text">Description:
-            {%if task.description%}
-                {{task.description}}
-            {%else%}
-                None
-            {%endif%}
-        </p>
+    <div class="">
+        <div class="card m-4  w-75">
+            <h5 class="card-header">Task</h5>
+            <div class="card-body">
+                <h5 class="card-title">{{task.title}}</h5>
+                <p class="card-text">Description:
+                    {%if task.description%}
+                        {{task.description}}
+                    {%else%}
+                        None
+                    {%endif%}
+                </p>
 
-        {% if task.status == "DONE"%}
-            <p class="card-text text-success">Status: {{task.get_status_display}}</p>
-        {% elif task.status == "TO_DO"%}
-            <p class="card-text text-primary">Status: {{task.get_status_display}}</p>
-        {%elif task.status == "IN_PROGRESS"%}
-            <p class="card-text text-warning">Status: {{task.get_status_display}}</p>
-        {%endif%}
+                {% if task.status == "DONE"%}
+                    <p class="card-text text-success">Status: {{task.get_status_display}}</p>
+                {% elif task.status == "TO_DO"%}
+                    <p class="card-text text-primary">Status: {{task.get_status_display}}</p>
+                {%elif task.status == "IN_PROGRESS"%}
+                    <p class="card-text text-warning">Status: {{task.get_status_display}}</p>
+                {%endif%}
 
-        {% if task.priority == "3"%}
-            <p class="card-text text-primary">Priority: {{task.get_priority_display}}</p>
-        {% elif task.priority == "2"%}
-            <p class="card-text text-warning">Priority: {{task.get_priority_display}}</p>
-        {%elif task.priority == "1"%}
-            <p class="card-text text-danger">Priority: {{task.get_priority_display}}</p>
-        {%endif%}
-        <p class="card-text">Due to {{task.due_to_date}}</p>
-        <div class="dropdown me-1">
-            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
-                Actions
-            </button>
-            <ul class="dropdown-menu bg-info-subtle">
-              <li><a href="{% url 'task_update' task.id%}" class="dropdown-item">Edit task</a></li>
-              <li><a href="{% url 'task_delete' task.id%}" class="dropdown-item">Delete task</a></li>
-            </ul>
+                {% if task.priority == "3"%}
+                    <p class="card-text text-primary">Priority: {{task.get_priority_display}}</p>
+                {% elif task.priority == "2"%}
+                    <p class="card-text text-warning">Priority: {{task.get_priority_display}}</p>
+                {%elif task.priority == "1"%}
+                    <p class="card-text text-danger">Priority: {{task.get_priority_display}}</p>
+                {%endif%}
+                <p class="card-text">Due to {{task.due_to_date}}</p>
+                <div class="dropdown me-1">
+                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
+                        Actions
+                    </button>
+                    <ul class="dropdown-menu bg-info-subtle">
+                    <li><a href="{% url 'task_update' task.id%}" class="dropdown-item">Edit task</a></li>
+                    <li><a href="{% url 'task_delete' task.id%}" class="dropdown-item">Delete task</a></li>
+                    </ul>
+                </div>
+                <br>
+                <a href="{% url 'task_list'%}" class="btn btn-primary">Go back</a>
+            </div>
         </div>
-        <br>
-        <a href="{% url 'task_list'%}" class="btn btn-primary">Go back</a>
+        <div class="m-4">
+            <form method="post" action="{% url 'task_detail' task.pk%}" class="m-4 align-self-end">
+                {%csrf_token%}
+                <h4 class="">Comment</h4>
+                {{form.as_p}}
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </form>
         
+            <ul style="list-style: none;">
+                {% for comment in task.comments.all %}
+                    <li>
+                        <div class="card p-3 mt-2 w-50">
+                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="user d-flex flex-row align-items-center">
+                            <span><small class="font-weight-bold text-primary">{{comment.creator}}</small> 
+                            <p class="font-weight-bold">{{comment.content}}</p></span>
+                        </div>
+                        
+                        <small>{{comment.get_coment_age}}</small>
+                        </div>
+                    </li>
+                    <br>
+                {%endfor%}
+            </ul>
         </div>
     </div>
 {% endblock %}
