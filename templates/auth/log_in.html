@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="POST" class="position-absolute start-50 top-50 translate-middle">
+        {%csrf_token%}
+        <h2 class="">Log in</h2>
+        <div class="mb-3">
+            {{form.username.label}}
+            {{form.username}}
+        </div>
+        <div class="mb-3">
+            {{form.password.label}}
+            {{form.password}}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock content %}

@@ -19,7 +19,7 @@ class TaskCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskCreateForm, self).__init__(*args, **kwargs)
-        self.fields['due_to_date'].initial = datetime.now().date()  #
+        self.fields['due_to_date'].initial = datetime.now().date()
 
 
 class TaskFilterForm(forms.Form):
@@ -29,14 +29,21 @@ class TaskFilterForm(forms.Form):
         ("TO_DO", "To do"),
         ("IN_PROGRESS", "In progress")
     ]
+    TASKS_FOR_CHOISES = [
+        ("", "For everyone"),
+        ("MY_TASKS", "My tasks"),
+        ("CREATED_BY_ME", "Created by me")
+    ]
 
     status = forms.ChoiceField(choices=STATUS_CHOICES, label="Status", required=False, widget=forms.Select(attrs={"class":"form-select"}))
+    task_for = forms.ChoiceField(choices=TASKS_FOR_CHOISES, label="Task for", required=False, widget=forms.Select(attrs={"class":"form-select"}))
 
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['content', "file"]
         widgets = {
             'content': forms.TextInput(attrs={'class': 'form-control w-50 '}),
+            'file': forms.FileInput(attrs={'class': 'form-control w-25'})
         }
