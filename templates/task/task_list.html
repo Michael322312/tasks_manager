@@ -10,7 +10,7 @@
             </form>
             <ol class="list-group list-group-light list-group-numbered m-2">
                 {% for task in tasks%}
-                    <a href="{% url 'task_detail' task.pk %}" style="text-decoration: none;" class="p-1 w-25 h-50">
+                    <a href="{% url 'task:task_detail' task.pk %}" style="text-decoration: none;" class="p-1 w-25 h-50">
                         <li class="list-group-item" style="min-width: 300px;">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">
@@ -26,7 +26,7 @@
                                 {%endif%}
                             </div>
                             <br>
-                            <form action="{% url 'task_complete' task.pk%}" method="post">
+                            <form action="{% url 'task:task_complete' task.pk%}" method="post">
                                 {%csrf_token%}
                                 <button type="submit" class="bg-success rounded btn text-white flex-start">
                                     Complete
@@ -39,19 +39,20 @@
                     <h2>There is not available any tasks</h2>
                 {% endfor %}
         </div>
-
-        <div class="flex-fill mt-5 w-50">
-            <ul style="list-style-type: none;" class="fs-5 ms-2">
-                <li class="me-1"> 
-                    <h1>
-                        Hello {{user}}!
-                    </h1>
-                </li>
-                <li>Current session: {{user.username}}</li>
-                <li>Last login {{user.last_login}}</li>
-                <li>Total created tasks {{user.tasks.all|length}}</li>
-                <li>User is staff: {{user.is_staff}}</li>
-            </ul>
-        </div>
+        {% if request.user.is_authenticated%}
+            <div class="flex-fill mt-5 w-50">
+                <ul style="list-style-type: none;" class="fs-5 ms-2">
+                    <li class="me-1"> 
+                        <h1>
+                            Hello {{user}}!
+                        </h1>
+                    </li>
+                    <li>Current session: {{user.username}}</li>
+                    <li>Last login {{user.last_login}}</li>
+                    <li>Total created tasks {{user.tasks.all|length}}</li>
+                    <li>User is staff: {{user.is_staff}}</li>
+                </ul>
+            </div>
+        {%endif%}
     </div>
 {% endblock %}

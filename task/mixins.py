@@ -1,7 +1,7 @@
-from django.core.exceptions import PermissionDenied
-from .models import *
+from task.models import Task
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+
 
 class UserIsOwnerMixin(object):
     def dispatch(self, request, *args, **kwargs):
@@ -12,6 +12,10 @@ class UserIsOwnerMixin(object):
             if instance.task_for == self.request.user:
                 return super().dispatch(request, *args, **kwargs)
         else:
-            messages.add_message(request, messages.INFO, f"Only owner can change it")
+            messages.add_message(
+                request,
+                messages.INFO,
+                "Only owner can change it"
+            )
             referring_url = request.META.get('HTTP_REFERER')
             return redirect(referring_url)

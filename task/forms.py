@@ -1,21 +1,39 @@
 from django import forms
-from .models import Task, Comment, User
+from .models import Task, Comment
 from datetime import datetime
 
 
 class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'due_to_date', 'status', 'priority', 'task_for']
+
+        fields = [
+            'title',
+            'description',
+            'due_to_date',
+            'status',
+            'priority',
+            'task_for',
+            'url_html',
+            'url_type_choice'
+        ]
+
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'due_to_date': forms.SelectDateWidget(years=range(datetime.now().year, datetime.now().year + 5)),
+            'due_to_date': forms.SelectDateWidget(
+                years=range(
+                    datetime.now().year,
+                    datetime.now().year + 5
+                )
+            ),
             'status': forms.Select(attrs={'class': 'form-select'}),
             'priority': forms.Select(attrs={'class': 'form-select'}),
-            'task_for': forms.CheckboxSelectMultiple()
-        }
+            'task_for': forms.CheckboxSelectMultiple(),
+            'url_html': forms.TextInput(attrs={'class': 'form-control'}),
+            'url_type_choise': forms.Select(attrs={'class': 'form-select'})
 
+        }
 
     def __init__(self, *args, **kwargs):
         super(TaskCreateForm, self).__init__(*args, **kwargs)
@@ -25,7 +43,7 @@ class TaskCreateForm(forms.ModelForm):
 class TaskFilterForm(forms.Form):
     STATUS_CHOICES = [
         ("", "All"),
-        ("DONE",'Done'),
+        ("DONE", 'Done'),
         ("TO_DO", "To do"),
         ("IN_PROGRESS", "In progress")
     ]
@@ -35,8 +53,18 @@ class TaskFilterForm(forms.Form):
         ("CREATED_BY_ME", "Created by me")
     ]
 
-    status = forms.ChoiceField(choices=STATUS_CHOICES, label="Status", required=False, widget=forms.Select(attrs={"class":"form-select"}))
-    task_for = forms.ChoiceField(choices=TASKS_FOR_CHOISES, label="Task for", required=False, widget=forms.Select(attrs={"class":"form-select"}))
+    status = forms.ChoiceField(
+        choices=STATUS_CHOICES,
+        label="Status",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
+    task_for = forms.ChoiceField(
+        choices=TASKS_FOR_CHOISES,
+        label="Task for",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
 
 
 class CommentForm(forms.ModelForm):
